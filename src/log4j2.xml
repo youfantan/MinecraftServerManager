@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{MMM dd yyyy HH:mm:ss} [%level] %m%n"/>
+        </Console>
+        <RollingFile name="RollingFile" fileName="logs/info.log"
+                     filePattern="logs/app-%d{yyyy-MM-dd HH}.log">
+            <PatternLayout>
+                <Pattern>%d{MMM dd yyyy HH:mm:ss} [%level] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="trace">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Root>
+    </Loggers>
+</Configuration>
