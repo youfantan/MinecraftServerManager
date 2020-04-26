@@ -17,8 +17,10 @@ public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);
     public static void main(String []agrs) throws IOException, InterruptedException {
         logger.trace("Welcome To MinecraftServerManager");
+        Update.checkUpdate();
+
         logger.info("Reading The Properties for MSM...");
-        //Propertiesçš„åŸºæœ¬å†…å®¹ï¼Œå°†é‡‡ç”¨jsonæ ¼å¼å­˜å‚¨
+        //PropertiesµÄ»ù±¾ÄÚÈİ£¬½«²ÉÓÃjson¸ñÊ½´æ´¢
         /*
         {
 	        "isInstalled":${isinstalled}
@@ -32,34 +34,34 @@ public class Main {
         if(!porpdir.exists()){
             logger.warn("Can't Find Folder Prperties.msm Will make a new Folder");
             porpdir.mkdir();
-            //åˆ›å»ºPropertiesç›®å½•
+            //´´½¨PropertiesÄ¿Â¼
         }
         if (!PropFile.exists()){
             logger.warn("Can't Find Properties\\msmprop.json,msm Will Create a new Properties");
             PropFile.createNewFile();
-            //åˆ›å»ºæ–‡ä»¶å¹¶å†™å…¥åŸºæœ¬å†…å®¹
+            //´´½¨ÎÄ¼ş²¢Ğ´Èë»ù±¾ÄÚÈİ
             String CommonProperties="{\"isInstalled\":\"false\",\"msmVersion\":\"0.0.1-SNAPSHOT\"}";
             FileUtils.write(PropFile,CommonProperties,"UTF-8");
         }
         else {
             logger.info("Successful Find Properties.msm is getting INFORMATION...");
-            //è¯»å–msmProp.jsonå†…å®¹
+            //¶ÁÈ¡msmProp.jsonÄÚÈİ
         }
         File msmProp=new File("Properties\\msmProp.json");
         String msmProperties=FileUtils.readFileToString(msmProp,"UTF-8");
-        //ä½¿ç”¨org.apache.commons.ioçš„FileUtillsæ–¹æ³•è¯»å–msmProp.jsonå†…å®¹åˆ°å­—ç¬¦ä¸²msmProperties
+        //Ê¹ÓÃorg.apache.commons.ioµÄFileUtills·½·¨¶ÁÈ¡msmProp.jsonÄÚÈİµ½×Ö·û´®msmProperties
         JSONObject propob=new JSONObject(msmProperties);
-        //åˆ›å»ºä¸€ä¸ªJSONObjectå¯¹åº”msmProperties
+        //´´½¨Ò»¸öJSONObject¶ÔÓ¦msmProperties
         String installState=propob.getString("isInstalled");
-        //æ£€æµ‹æœåŠ¡ç«¯è½¯ä»¶æ˜¯å¦å®‰è£…
+        //¼ì²â·şÎñ¶ËÈí¼şÊÇ·ñ°²×°
         if (installState == "true"){
             logger.info("Server is Installed.Waiting For Run Server");
-            //å®‰è£…åˆ™æ‰§è¡ŒRunServeræ–¹æ³•
+            //°²×°ÔòÖ´ĞĞRunServer·½·¨
             RunServer();
         }
         else {
             logger.warn("Server Not Installed.Now msm will help you to install server");
-            //æœªå®‰è£…åˆ™æ‰§è¡ŒInstallServeræ–¹æ³•
+            //Î´°²×°ÔòÖ´ĞĞInstallServer·½·¨
             InstallServer();
         }
     }
@@ -96,11 +98,11 @@ public class Main {
         Properties systemProp=new Properties(System.getProperties());
         String arch=systemProp.getProperty("os.arch");
         System.out.println("Your Computer's Arch is "+arch+".");
-        System.out.println("But You Can Also Type systeminfo in Windows Console to check your computer's arch.If the result is different from msm's result,please check your jre(java runtime environment) or jdk(java development kits) version.If msm's result is x86 but your Windows Console's result is amd64,you should change your java version as amd64ï¼ˆx64)");
+        System.out.println("But You Can Also Type systeminfo in Windows Console to check your computer's arch.If the result is different from msm's result,please check your jre(java runtime environment) or jdk(java development kits) version.If msm's result is x86 but your Windows Console's result is amd64,you should change your java version as amd64£¨x64)");
         System.out.print("The Stack Memory You Need in Minecraft Server.(Recommended Stack Memory is 2048M)");
         Scanner Memory=new Scanner(System.in);
         int ServerStackMemory=Memory.nextInt();
-        String RunServerBat="java -Xmx"+ServerStackMemory+"M"+" -jar "+version+"-"+type+"-"+"server.jar";
+        String RunServerBat="java -Xmx"+ServerStackMemory+"M"+" -jar "+type+"-"+version+"-"+"server.jar";
         File run=new File("Server\\run.bat");
         run.createNewFile();
         FileUtils.write(run,RunServerBat,"UTF-8");
