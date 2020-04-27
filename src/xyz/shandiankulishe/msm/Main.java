@@ -3,6 +3,7 @@ package xyz.shandiankulishe.msm;
 import java.io.File;
 import java.io.IOException;
 
+import java.net.URL;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -37,7 +38,7 @@ public class Main {
             //创建Properties目录
         }
         if (!PropFile.exists()){
-            logger.warn("Can't Find Properties\\msmprop.json,msm Will Create a new Properties");
+            logger.warn("Can't Find Properties\\msmProp.json,msm Will Create a new Properties");
             PropFile.createNewFile();
             //创建文件并写入基本内容
             String CommonProperties="{\"isInstalled\":\"false\",\"msmVersion\":\"0.0.1-SNAPSHOT\"}";
@@ -53,8 +54,10 @@ public class Main {
         JSONObject propob=new JSONObject(msmProperties);
         //创建一个JSONObject对应msmProperties
         String installState=propob.getString("isInstalled");
+        String iva=new String(installState);
+        String atrue=new String("true");
         //检测服务端软件是否安装
-        if (installState == "true"){
+        if (iva.equals(atrue)){
             logger.info("Server is Installed.Waiting For Run Server");
             //安装则执行RunServer方法
             RunServer();
@@ -71,7 +74,7 @@ public class Main {
         String msmProperties=FileUtils.readFileToString(msmProp,"UTF-8");
         JSONObject msmob=new JSONObject(msmProperties);
         System.out.println("Please Choose Which Server Type Do You Want To Install");
-        String Types[]={"CraftBukkit","Spigot","Vanilla"};
+        String Types[]={"Craftbukkit","Spigot","Vanilla"};
         for(int j=0;j<3;j++){
             String printtype=Types[j];
             System.out.println(j+"  "+printtype);
@@ -80,20 +83,65 @@ public class Main {
         int getType=scanType.nextInt();
         String type=Types[getType];
         msmob.put("ServerType",type);
-        String Versions[]={"1.7.2","1.7.10","1.8","1.8.2","1.8.4","1.8.6","1.8.9","1.9","1.9.4","1.10","1.10.2","1.11","1.11.2","1.12","1.12.2","1.13","1.13.2","1.14","1.14.4","1.15","1.15.2"};
-        for(int i=0;i<21;i++){
-            String printversion=Versions[i];
-            System.out.println(i+"  "+printversion);
+        if (type == "Craftbukkit"){
+            String BVersion[]={"1.8","1.8.3","1.8.8","1.9","1.9.2","1.9.4","1.10.2","1.11","1.11.2","1.12","1.13","1.13.2"};
+            for (int a=0;a<12;a++){
+                String BPVersion=BVersion[a];
+                System.out.println(a+"  "+BPVersion);
+            }
+            Scanner scanVersion=new Scanner(System.in);
+            int getVersion=scanVersion.nextInt();
+            String version=BVersion[getVersion];
+            msmob.put("ServerVersion",version);
+            String WriteJson=msmob.toString();
+            FileUtils.write(msmProp,WriteJson,"UTF-8",false);
         }
-        Scanner scanVersion=new Scanner(System.in);
-        int getVersion=scanVersion.nextInt();
-        String version=Versions[getVersion];
-        msmob.put("ServerVersion",version);
-        String WriteJson=msmob.toString();
-        FileUtils.write(msmProp,WriteJson,"UTF-8",false);
-        //Download Servers
+        else if (type == "Spigot"){
+            String SVersion[]={"1.8","1.8.3","1.8.8","1.9","1.9.2","1.9.4","1.10.2","1.11","1.11.2","1.12","1.13","1.13.2","1.14","1.14.4","1.15","1.15.2"};
+            for (int b=0;b<16;b++){
+                String PSVersion=SVersion[b];
+                System.out.println(b+"  "+PSVersion);
+            }
+            Scanner scanVersion=new Scanner(System.in);
+            int getVersion=scanVersion.nextInt();
+            String version=SVersion[getVersion];
+            msmob.put("ServerVersion",version);
+            String WriteJson=msmob.toString();
+            FileUtils.write(msmProp,WriteJson,"UTF-8",false);
+        }
+        else if (type == "Vanilla"){
+            String VVersion[]={"1.8","1.8.3","1.8.4","1.8.5","1.8.6","1.8.8","1.9","1.9.2","1.9.4","1.10","1.10.2","1.11","1.11.2","1.12","1.12.2","1.13","1.13.2","1.14","1.14.4","1.15","1.15.2"};
+            for (int c=0;c<21;c++){
+                String PVVersion=VVersion[c];
+                System.out.println(c+"  "+PVVersion);
+            }
+            Scanner scanVersion=new Scanner(System.in);
+            int getVersion=scanVersion.nextInt();
+            String version=VVersion[getVersion];
+            msmob.put("ServerVersion",version);
+            String WriteJson=msmob.toString();
+            FileUtils.write(msmProp,WriteJson,"UTF-8",false);
+
+        }
+        File jsonFile=new File("Properties\\msmProp.json");
+        String GetJsonVersion=FileUtils.readFileToString(jsonFile,"UTF-8");
+        JSONObject object=new JSONObject(GetJsonVersion);
+        String version=object.getString("ServerVersion");
+        String servertype=object.getString("ServerType");
+        String ServerName=servertype+"-"+version+"-Server.jar";
+        logger.info("Making Directory...");
         File ServerDir=new File("Server");
         ServerDir.mkdir();
+        File DownloadFile=new File("Server\\"+ServerName);
+        logger.info("Start To Download Server Files...");
+        String Url="http://114.55.143.223/msm/Target/"+ServerName;
+        URL Downloadurl=new URL(Url);
+        long StartTime=System.currentTimeMillis();
+        FileUtils.copyURLToFile(Downloadurl,DownloadFile);
+        long EndTime=System.currentTimeMillis();
+        long TakeTimel=EndTime-StartTime/1000;
+        String TakeTime=String.valueOf(TakeTimel);
+        logger.info("Download Successful in "+TakeTime+" Seconds");
         System.out.println("Now msm Will Set Server's Stack Memory,Please Attention,If your computer is x86,the Server's MAX Stack Memory is 4096M(4 GiB),But if your computer is amd64,the Server's MAX Stack Memory is 131072M(128GiB)");
         Properties systemProp=new Properties(System.getProperties());
         String arch=systemProp.getProperty("os.arch");
@@ -102,7 +150,7 @@ public class Main {
         System.out.print("The Stack Memory You Need in Minecraft Server.(Recommended Stack Memory is 2048M)");
         Scanner Memory=new Scanner(System.in);
         int ServerStackMemory=Memory.nextInt();
-        String RunServerBat="java -Xmx"+ServerStackMemory+"M"+" -jar "+type+"-"+version+"-"+"server.jar";
+        String RunServerBat="java -Xmx"+ServerStackMemory+"M"+" -jar "+"Server\\"+type+"-"+version+"-"+"Server.jar";
         File run=new File("Server\\run.bat");
         run.createNewFile();
         FileUtils.write(run,RunServerBat,"UTF-8");
@@ -111,6 +159,10 @@ public class Main {
         long taketimelong=endtime-starttime;
         String taketime=String.valueOf(taketimelong);
         logger.info("Take time:"+taketime+" ms");
+        logger.info("Changing Properties...");
+        object.put("isInstalled","true");
+        String WriteJson=object.toString();
+        FileUtils.write(jsonFile,WriteJson,"UTF-8");
        for(int i=3;i>0;i--){
            Thread.sleep(1000);
            String exitinfo="Server is Start...msm Will Exit in"+i+"Seconds";
@@ -121,7 +173,7 @@ public class Main {
    public static void RunServer() throws IOException, InterruptedException {
         logger.info("Start to Run Server");
         File runbat=new File("Server\\run.bat");
-        Process runtask=Runtime.getRuntime().exec("cmd /k Server\\run.bat");
+        Process runtask=Runtime.getRuntime().exec("cmd /k Start Server\\run.bat");
         for(int i=3;i>0;i--){
             Thread.sleep(1000);
             String exitinfo="Server is Start...msm Will Exit in"+i+"Seconds";
